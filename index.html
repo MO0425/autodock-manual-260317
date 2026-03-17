@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WSL2でautodock-vina.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<meta name="robots" content="noindex, nofollow">
+
+<style>
+/*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #333;
+  background: #f8f8f8;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #333;
+  font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #008080;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #d14;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+
+.hljs-subst {
+  font-weight: normal;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #009926;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #fdd;
+}
+
+.hljs-addition {
+  background: #dfd;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+</style>
+<link rel="stylesheet" href="file:///d%3A//Files//MEL//docking_simulation_manual//github-markdown.css" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h2 id="wsl2linux%E7%92%B0%E5%A2%83%E3%81%AE%E6%A7%8B%E7%AF%89">WSL2（Linux）環境の構築</h2>
+<p>以前にChimeraを使ったAutodock-Vinaによるドッキングをどこかで紹介したような気がしますが， WSLでのAutoDock-Vinaでのドッキングを紹介します。</p>
+<p>WSL（Windows Subsystem for Linux）は，Windows上でLinux環境を動作させる仕組みです。Linux環境を使えるようになると研究の幅が大きく広がります。</p>
+<p>ググればいくらでも方法は出てきますが（geminiも丁寧に教えてくれるはず），一応以下でインストラクション</p>
+<h3 id="%E7%A2%BA%E8%AA%8D-%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%AB%E3%83%91%E3%83%8D%E3%83%AB%E3%81%AEwindows%E3%81%AE%E6%A9%9F%E8%83%BD%E3%81%AE%E6%9C%89%E5%8A%B9%E5%8C%96%E3%81%BE%E3%81%9F%E3%81%AF%E7%84%A1%E5%8A%B9%E5%8C%96%E3%81%AE%E8%A8%AD%E5%AE%9A">確認　コントロールパネルのWindowsの機能の有効化または無効化の設定</h3>
+<h4 id="%E6%A4%9C%E7%B4%A2%E7%AA%93windows%E3%83%9C%E3%82%BF%E3%83%B3%E6%A8%AA%E3%81%ABwindows%E3%81%AE%E6%A9%9F%E8%83%BD%E3%81%AE%E6%9C%89%E5%8A%B9%E5%8C%96%E3%81%BE%E3%81%9F%E3%81%AF%EF%BD%A5%EF%BD%A5%EF%BD%A5%E3%81%A8%E6%89%93%E3%81%A1windows%E3%81%AE%E6%A9%9F%E8%83%BD%E3%81%AE%E6%9C%89%E5%8A%B9%E5%8C%96%E3%81%BE%E3%81%9F%E3%81%AF%E7%84%A1%E5%8A%B9%E5%8C%96%E3%82%92%E9%96%8B%E3%81%8F">検索窓（Windowsボタン横）にWindowsの機能の有効化または･･･と打ち，Windowsの機能の有効化または無効化を開く。</h4>
+<p><img src="Files/windowsの機能の有効化.png" alt=""><br></p>
+<h4 id="linux-%E7%94%A8-windows-%E3%82%B5%E3%83%96%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E4%BB%AE%E6%83%B3%E3%83%9E%E3%82%B7%E3%83%B3%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0-%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E3%81%93%E3%81%A8%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%99%E3%82%8B">Linux 用 Windows サブシステム，仮想マシンプラットフォーム を有効になっていることを確認する。</h4>
+<p><img src="Files/windowsの機能の有効化_2.png" alt=""><br></p>
+<p>チェックが入っていなければ，チェックを入れて，PCを再起動。入っていればそのまま次へ。</p>
+<br>
+<h3 id="wsl2%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">WSL2のインストール</h3>
+<h4 id="powershell%E3%82%82%E3%81%97%E3%81%8F%E3%81%AF%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%97%E3%83%AD%E3%83%B3%E3%83%97%E3%83%88%E3%82%92%E7%AE%A1%E7%90%86%E8%80%85%E6%A8%A9%E9%99%90%E3%81%A7%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%92%E3%82%8B">Powershellもしくはコマンドプロンプトを管理者権限で立ち上げる。</h4>
+<p>（スタート→対象のアイコンを右クリック→管理者権限で立ち上げるを選択）</p>
+<h4 id="br"><br></h4>
+<h4 id="wsl%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%922%E3%81%AB%E8%A8%AD%E5%AE%9A%E3%81%99%E3%82%8B%E5%A4%9A%E5%88%86%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E3%81%A7ver-2%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%A6%E3%81%84%E5%85%A5%E3%82%8B%E3%81%A8%E6%80%9D%E3%81%86%E3%81%91%E3%81%A9%E5%BF%B5%E3%81%AE%E3%81%9F%E3%82%81">WSLのバージョンを2に設定する（多分デフォルトでver 2になってい入ると思うけど，念のため）</h4>
+<p>（“&gt;”は入力しない）</p>
+<pre class="hljs"><code><div>&gt; wsl -<span class="hljs-literal">-set</span><span class="hljs-literal">-default</span><span class="hljs-literal">-version</span> <span class="hljs-number">2</span>
+</div></code></pre>
+<h4 id="%E4%BD%BF%E7%94%A8%E5%8F%AF%E8%83%BD%E3%81%AAlinux%E3%83%87%E3%82%A3%E3%82%B9%E3%83%88%E3%83%AA%E3%83%93%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E8%A1%A8%E7%A4%BA%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B">使用可能なLinuxディストリビューションを表示してみる</h4>
+<pre class="hljs"><code><div>&gt; wsl -<span class="hljs-literal">-list</span> -<span class="hljs-literal">-online</span>
+</div></code></pre>
+<p>実行結果</p>
+<pre class="hljs"><code><div>&gt; wsl -<span class="hljs-literal">-list</span> -<span class="hljs-literal">-online</span>
+インストールできる有効なディストリビューションの一覧を次に示します。
+<span class="hljs-string">'wsl.exe --install &lt;Distro&gt;'</span> を使用してインストールします。
+
+NAME                            FRIENDLY NAME
+AlmaLinux<span class="hljs-literal">-8</span>                     AlmaLinux OS <span class="hljs-number">8</span>
+AlmaLinux<span class="hljs-literal">-9</span>                     AlmaLinux OS <span class="hljs-number">9</span>
+AlmaLinux<span class="hljs-literal">-Kitten</span><span class="hljs-literal">-10</span>             AlmaLinux OS Kitten <span class="hljs-number">10</span>
+AlmaLinux<span class="hljs-literal">-10</span>                    AlmaLinux OS <span class="hljs-number">10</span>
+Debian                          Debian GNU/Linux
+⋮
+Ubuntu<span class="hljs-literal">-20</span>.<span class="hljs-number">04</span>                    Ubuntu <span class="hljs-number">20.04</span> LTS
+Ubuntu<span class="hljs-literal">-22</span>.<span class="hljs-number">04</span>                    Ubuntu <span class="hljs-number">22.04</span> LTS
+OracleLinux_7_9                 Oracle Linux <span class="hljs-number">7.9</span>
+OracleLinux_8_10                Oracle Linux <span class="hljs-number">8.10</span>
+OracleLinux_9_5                 Oracle Linux <span class="hljs-number">9.5</span>
+openS<span class="hljs-built_in">USE-Leap</span><span class="hljs-literal">-15</span>.<span class="hljs-number">6</span>              openSUSE Leap <span class="hljs-number">15.6</span>
+S<span class="hljs-built_in">USE-Linux</span><span class="hljs-literal">-Enterprise</span><span class="hljs-literal">-15</span><span class="hljs-literal">-SP6</span>    SUSE Linux Enterprise <span class="hljs-number">15</span> SP6
+</div></code></pre>
+<h4 id="%E5%A5%BD%E3%81%8D%E3%81%AAlinix%E3%83%87%E3%82%A3%E3%82%B9%E3%83%88%E3%83%AA%E3%83%93%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AB%E3%81%AFubuntu%E3%81%A0%E3%81%A8%E6%80%9D%E3%81%86">好きなLinixディストリビューションをインストール（基本的にはUbuntuだと思う）</h4>
+<p>Ubuntu-24.04をインストールしてみます</p>
+<pre class="hljs"><code><div>&gt; wsl -<span class="hljs-literal">-install</span> <span class="hljs-literal">-d</span> Ubuntu<span class="hljs-literal">-24</span>.<span class="hljs-number">04</span>　<span class="hljs-comment"># Ubuntu 24.04 LTSのインストール</span>
+</div></code></pre>
+<p>インストールが始まります。終わったらインストールしたディストリビューションが起動するので，アカウントとパスワードを設定します</p>
+<pre class="hljs"><code><div>Create a default Unix user account:      <span class="hljs-comment"># 好きな名前を入れてenterを押す</span>
+New password: *****      <span class="hljs-comment"># パスワードを設定します（Windowsのアカウントとは独立しています。以降sudoコマンド実行で必要なので必ずメモするなりして覚えておいてください）</span>
+Retype new password: *****      <span class="hljs-comment">#パスワードを確認されます </span>
+</div></code></pre>
+<p>パスワードが通るとインストールしたディストリビューションが起動します。</p>
+<pre class="hljs"><code><div>user_account@xxxx: /mnt/c/Users/xxxx$      <span class="hljs-comment">#user_accountの部分は先に設定したUnix user accountが表示されます。</span>
+</div></code></pre>
+<h4 id="linux%E3%81%AE%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AAhome%E3%83%A6%E3%83%BC%E3%82%B6%E3%83%BC%E5%90%8D%E3%81%8B%E3%82%89%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%8C%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E8%A8%AD%E5%AE%9A">Linuxのホームディレクトリ（/home/ユーザー名）から立ち上がるように設定</h4>
+<p>Linuxの初期設定（.bashrc）に，起動時にディレクトリへ移動するコマンドを追加する</p>
+<pre class="hljs"><code><div><span class="hljs-comment"># 以下のコマンドで.bashrcファイルの最終行に"cd ~"を追記。</span>
+$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"cd ~"</span> &gt;&gt; ~/.bashrc 
+
+</div></code></pre>
+<p>一旦Linuxからログアウト。（Crtl + d）。powershellもしくはコマンドプロンプトから以下のコマンドで改めてUbuntuを立ち上げる</p>
+<pre class="hljs"><code><div>&gt; wsl <span class="hljs-literal">-d</span> Ubuntu<span class="hljs-literal">-24</span>.<span class="hljs-number">04</span>　<span class="hljs-comment"># ディストリビューション（Ubuntu 24.04 LTS）を指定して起動する，というコマンド</span>
+
+</div></code></pre>
+<p>Ubuntuがホームディレクトリから起動する（はず）</p>
+<pre class="hljs"><code><div>user_account@xxxx:~$
+</div></code></pre>
+<br>
+<h3 id="%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E6%9B%B4%E6%96%B0">パッケージの更新</h3>
+<h4 id="%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%83%AA%E3%82%B9%E3%83%88%E3%81%A8%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E8%87%AA%E4%BD%93%E3%82%92%E6%9B%B4%E6%96%B0">パッケージリストとパッケージ自体を更新</h4>
+<pre class="hljs"><code><div>$ sudo apt update &amp;&amp; sudo apt upgrade -y
+<span class="hljs-comment">#パスワードを求められるので，先に設定したパスワードを入力すると，updateとupgradeが始まります。</span>
+
+</div></code></pre>
+<p>日本語パッケージのインストール</p>
+<pre class="hljs"><code><div>$ sudo apt install -y language-pack-ja
+$ sudo update-locale LANG=ja_JP.UTF-8
+</div></code></pre>
+<p>基本的なビルドツールのインストール</p>
+<pre class="hljs"><code><div>$ sudo apt install -y build-essential
+</div></code></pre>
+<p>curl / wgetのインストール（たぶんもう入っているので不要かも）</p>
+<pre class="hljs"><code><div>$ sudo apt install -y curl wget
+</div></code></pre>
+<br>
+<h3 id="miniconda%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">minicondaのインストール</h3>
+<p>pythonのパッケージ管理ツール”conda”と必要最小限のパッケージをインストール</p>
+<pre class="hljs"><code><div>$ mkdir -p ~/miniconda3 <span class="hljs-comment">#ディレクトリーの作成</span>
+
+$ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh <span class="hljs-comment">#インストーラーのDL</span>
+
+$ bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 <span class="hljs-comment">#サイレントインストール</span>
+
+$ rm ~/miniconda3/miniconda.sh <span class="hljs-comment">#インストーラーの削除</span>
+
+$ <span class="hljs-built_in">source</span> ~/miniconda3/bin/activate <span class="hljs-comment">#リフレッシュ</span>
+<span class="hljs-comment"># (base) user_account@xxxx:~$ に変わる</span>
+
+$ conda init --all <span class="hljs-comment">#condaを初期化</span>
+</div></code></pre>
+<br>
+<h3 id="vs-code%E3%81%A8%E9%80%A3%E6%90%BA">VS Codeと連携</h3>
+<p>VS Code （ =Microsoftが開発しているソースコードエディタ）の拡張機能を使用してWSL環境と連携させる。いろいろ楽になるので連携させた方がよい。</p>
+<h4 id="1-vs-code%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E5%85%A5%E3%81%A3%E3%81%A6%E3%81%84%E3%81%AA%E3%81%91%E3%82%8C%E3%81%B0">1.　VS Codeのインストール（入っていなければ）</h4>
+<p><a href="https://code.visualstudio.com/">https://code.visualstudio.com/</a></p>
+<p>にアクセスして，Windowsにインストール。</p>
+<h4 id="2-vs-code%E3%81%AB%E6%A9%9F%E8%83%BD%E6%8B%A1%E5%BC%B5%E3%82%92%E8%BF%BD%E5%8A%A0">2.　VS Codeに機能拡張を追加</h4>
+<p>2.1 日本語化</p>
+<ul>
+<li>VS Codeの左側の拡張機能からJapanese Language Pack for VS Codeを検索，インストール。</li>
+<li>Ctrl+Shift+Pを押して、display。</li>
+<li>Configure Display Languageコマンドを選択，Enterキーを押して、言語の一覧を表示。</li>
+<li>日本語 (ja)を選択し，Enterキーを押す。</li>
+<li>再起動を求められる→VS Codeを再起動。</li>
+</ul>
+<p>2.2 Remote Developmentのインストール</p>
+<p>VS Codeの左側の拡張機能からRemote Developmentを検索，インストール</p>
+<h4 id="3-vs-code%E3%81%AB%E6%A9%9F%E8%83%BD%E6%8B%A1%E5%BC%B5%E3%82%92%E8%BF%BD%E5%8A%A0">3.　VS Codeに機能拡張を追加</h4>
+<p>Ubuntu側を更新</p>
+<pre class="hljs"><code><div>$ sudo apt update
+</div></code></pre>
+<br>
+<h4 id="4-wsl%E3%81%A8vs-code%E3%82%92%E9%80%A3%E6%90%BA-%E9%81%A9%E5%BD%93%E3%81%AA%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%AB%E7%A7%BB%E5%8B%95%E3%81%97%E3%81%A6%E9%80%A3%E6%90%BA">4.　WSLとVS Codeを連携　適当なディレクトリに移動して連携</h4>
+<pre class="hljs"><code><div>$ <span class="hljs-built_in">cd</span> ****
+$ code .   <span class="hljs-comment">#ドットを忘れない</span>
+</div></code></pre>
+<p>確認を求められたら「はい」を選択</p>
+<p>VS codeの左下にWSL: Ubuntu-24.04などディストリビューション名が表示されていればOK</p>
+<br>
+<h2 id="autodock-vina-%E5%AE%9F%E8%A1%8C%E7%92%B0%E5%A2%83%E3%81%AE%E6%A7%8B%E7%AF%89">Autodock Vina 実行環境の構築</h2>
+<p><a href="https://github.com/MO0425/vina-env">https://github.com/MO0425/vina-env</a></p>
+<p>に記載の手順でできるはず･･･</p>
+<h3 id="autodock-vina%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">Autodock Vinaのインストール</h3>
+<pre class="hljs"><code><div>(base) user_account@xxxx:~$ mkdir vina <span class="hljs-comment"># ディレクトリの作成</span>
+(base) user_account@xxxx:~$ <span class="hljs-built_in">cd</span> vina <span class="hljs-comment"># ディレクトリvinaに移動</span>
+(base) user_account@xxxx:~/vina$ conda create -n vina python=3.10 <span class="hljs-comment"># python 3.10の仮想環境にvinaを作製。指示に従う。　</span>
+(base) user_account@xxxx:~/vina$ conda activate vina <span class="hljs-comment"># 仮想環境 vinaをアクティブにする</span>
+<span class="hljs-comment"># vina環境下で以下を行う</span>
+(vina) user_account@xxxx:~/vina$ conda config --env --add channels conda-forge
+(vina) user_account@xxxx:~/vina$ conda install -c bioconda vina
+(vina) user_account@xxxx:~/vina$ vina --<span class="hljs-built_in">help</span> <span class="hljs-comment"># 確認 エラーがでなければOK</span>
+
+
+</div></code></pre>
+<br>
+<h3 id="afdr-suite-software-tools-for-automated-docking-and-peripheral-tasks%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">AFDR suite (software tools for automated docking and peripheral tasks)のインストール</h3>
+<pre class="hljs"><code><div>(vina) user_account@xxxx:~/vina$ conda install hcc::adfr-suite
+</div></code></pre>
+<br>
+<h3 id="afdr%E3%81%A7%E3%82%AB%E3%83%90%E3%83%BC%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">AFDRでカバーできないツールをインストール</h3>
+<pre class="hljs"><code><div>(vina) user_account@xxxx:~/vina$ conda install -c conda-forge openbabel scipy rdkit gemmi
+(vina) user_account@xxxx:~/vina$ pip install meeko # meekoだけはpipでインストール。condaでインスト－ルするとなぜかpython 2が呼び出される･･･
+
+</div></code></pre>
+<br>
+<br>
+<br>
+<h2 id="%E6%BA%96%E5%82%99">準備</h2>
+<h3 id="%E3%83%AA%E3%82%AC%E3%83%B3%E3%83%89%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB">リガンドファイル</h3>
+<h4 id="pubchemhttpspubchemncbinlmnihgov%E3%81%A7%E6%A4%9C%E7%B4%A2">PubChem（<a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a>）で検索</h4>
+<p>3D ConformerのDownload CoordinatesからSDFとして保存</p>
+<p><img src="Files/image.png" alt=""><br></p>
+<br>
+<h4 id="pdb%E3%81%8B%E3%82%89%E5%8F%96%E5%BE%97">PDBから取得</h4>
+<p>例えばPDBjで検索。化合物検索のタブから目的のページへ</p>
+<p>右側のダウンロードから，sybyl Mol2 file (*.mol2ファイル)を保存。</p>
+<p><img src="Files/image 2.png" alt=""><br></p>
+<br>
+<h4 id="%E4%B8%8A%E3%81%A7%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%E5%A0%B4%E5%90%88">上で見つからない場合</h4>
+<p><a href="https://pubchem.ncbi.nlm.nih.gov//edit3/index.html">https://pubchem.ncbi.nlm.nih.gov//edit3/index.html</a></p>
+<p>で構造式を書いてSMILESを取得（クリップボードにコピー）</p>
+<p><img src="Files/image 3.png" alt=""></p>
+<p>※SMILES記法（スマイルスきほう、英語: simplified molecular input line entry system）とは、分子の化学構造をASCII符号の英数字で文字列化した、構造の曖昧性の無い表記方法である。SMILES文字列は多くの種類の分子エディタにおいてインポート可能で、二次元の図表あるいは三次元のモデルとして表示することができる。（Wikipedia）</p>
+<br>
+<p>Avogadro2を使って三次元SDFに変換</p>
+<p><a href="https://www.openchemistry.org/projects/avogadro2/">https://www.openchemistry.org/projects/avogadro2/</a></p>
+<p><img src="Files/image 4.png" alt=""></p>
+<p>ビルド→挿入→SMILES→クリップボードからペースト</p>
+<p>エクステンション→構造最適化</p>
+<p>分子のエクスポート→SDFで保存</p>
+<h3 id="br"><br></h3>
+<h3 id="%E3%82%BF%E3%83%B3%E3%83%91%E3%82%AF%E8%B3%AA%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB">タンパク質ファイル</h3>
+<h4 id="alphafold%E3%81%A7%E4%BA%88%E6%B8%AC%E3%81%97%E3%81%9F%E6%A7%8B%E9%80%A0%E3%81%AE%E6%9C%80%E9%81%A9%E5%8C%96">AlphaFoldで予測した構造の最適化</h4>
+<p>AIモデル（BoltzやAlphaFold）が出力する生の構造は，あくまで「原子の座標を予測した結果」であり，物理的な原子の反発や結合長を厳密に計算したものではない。</p>
+<p>そのため，原子同士がクラッシュしていたり，結合角がおかしな状態になってることがあります。タンパク質のエネルギーを最小化してあげる。</p>
+<p>いくつか方法があるけど，ChimeraXのISOLDEプラグインを使うのが楽。</p>
+<p>ChimeraXを持っていなければ，<a href="https://www.rbvi.ucsf.edu/chimerax">https://www.rbvi.ucsf.edu/chimerax</a>からDLしてインストール</p>
+<ul>
+<li><strong>ChimeraX（1.10.1）を開く</strong></li>
+<li><strong>ISOLDEのインストール</strong></li>
+</ul>
+<p>下部のCommand入力窓に，<code>toolshed install isolde</code>と入力</p>
+<p>もしくは，ToolsメニューからMore Tools…を選択→ChimeraX Toolshedが開く</p>
+<p>右上の検索窓にISOLDEと入力して検索。開く。</p>
+<p>右側のInstalledボタンをクリックしてインストール</p>
+<ul>
+<li><strong>AF予測構造を開く</strong></li>
+</ul>
+<p>Command入力窓に，<code>addh</code>と入力し，水素を付加</p>
+<ul>
+<li><strong><code>isolde start</code>と入力</strong></li>
+</ul>
+<p>ISOLDEのウインドウが立ち上がる。</p>
+<p>AF構造をChoose a modelから選択。</p>
+<p>Restraintsタブを選択し，</p>
+<p>Reference Modelsから　Reference model (self)</p>
+<p>LoadPAE matrixボタンを押して，AF予測時に一緒に出力される*_full_data_0.jsonを選択</p>
+<p>下側のapplyを押す。アラートが出るけどとりあえずOK。蜘蛛の巣みたいなのが現れる。</p>
+<ul>
+<li><strong>メイン画面のStart similationボタンをクリック。</strong></li>
+</ul>
+<p>アラートはとりあえず全部OK</p>
+<p>構造がもにょもにょ動き始める。</p>
+<p>動きが安定したところ（よくわからないから適当なところ）で止めて（Stop(keep)），ファイルメニュー→saveからpdbファイルとして保存。ドッキングの受容体タンパクとして使う。</p>
+<br>
+<h4 id="%E7%B5%90%E5%90%88%E9%83%A8%E4%BD%8D%E3%82%92%E6%B1%BA%E3%82%81%E3%82%8B%E4%B8%AD%E5%BF%83%E5%BA%A7%E6%A8%99%E3%81%A8%E3%82%B0%E3%83%AA%E3%83%83%E3%83%89%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9%E3%81%AE%E3%82%B5%E3%82%A4%E3%82%BA">結合部位を決める（中心座標とグリッドボックスのサイズ）</h4>
+<ul>
+<li><strong>類縁タンパク質で基質や基質類似体との複合体がある場合</strong>
+<ul>
+<li>PyMOLやChimeraXで構造を重ね合わせる。==テンプレートを自分のタンパク質にすること！==</li>
+</ul>
+</li>
+</ul>
+<p>PyMOLなら</p>
+<p><code>align 動かす方のobj, 自分のタンパク質のobj</code></p>
+<p>配列類似性が低い場合のコマンドは<code>super</code></p>
+<p>複数ドメインでうまく重ね合わさらない場合のコマンドは<code>cealign</code></p>
+<p><code>cealign 自分のタンパク質のobj, 動かす方のobj</code> ==（反対になるので注意）==</p>
+<pre><code>- FileメニューのExport Molecule…からリガンドを.sdfとして保存する。
+- sdfから中心座標とひと回り大きいボックスサイズを出力するpythonスクリプト。
+</code></pre>
+<pre class="hljs"><code><div><span class="hljs-comment">#grid_box.py</span>
+<span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">from</span> rdkit <span class="hljs-keyword">import</span> Chem
+
+<span class="hljs-comment">#分子の読み込み。ひとつでも複数でもOK。先ほどはき出したsdfのパスを記入</span>
+mols = [Chem.SDMolSupplier(f)[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> [<span class="hljs-string">'ligand_1.sdf'</span>, <span class="hljs-string">'ligand_2'</span>]]
+
+<span class="hljs-comment">#重原子の座標を取得する</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_coords</span><span class="hljs-params">(mol: Chem.Mol)</span> -&gt; np.ndarray:</span>
+    mol = Chem.RemoveHs(mol)
+    conf = mol.GetConformer(<span class="hljs-number">0</span>)
+    <span class="hljs-keyword">if</span> conf <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+         <span class="hljs-keyword">raise</span> RuntimeErrorr (<span class="hljs-string">"cannot get conformer from mol"</span>)
+    coords = np.array(conf.GetPositions()) 
+    <span class="hljs-keyword">return</span> coords
+
+<span class="hljs-comment">#分子の重心・分子を包含するgrid boxサイズ</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">calc_grid_box_info</span><span class="hljs-params">(mol)</span> -&gt; tuple[np.ndarray, np.ndarray]:</span>
+    coords = get_coords(mol)
+    center = np.average(coords, axis=<span class="hljs-number">0</span>)      
+    coord_min = np.min(coords, axis=<span class="hljs-number">0</span>)
+    coord_max = np.max(coords, axis=<span class="hljs-number">0</span>)
+    ligand_size = coord_max - coord_min
+
+    <span class="hljs-keyword">return</span> center, ligand_size
+
+centers = []
+grid_sizes = []
+<span class="hljs-keyword">for</span> mol <span class="hljs-keyword">in</span> mols:
+    c, g = calc_grid_box_info(mol)
+    centers.append(c)
+    grid_sizes.append(g)
+
+print(np.average(centers, axis=<span class="hljs-number">0</span>))
+
+print(np.max(grid_sizes, axis=<span class="hljs-number">0</span>))
+
+</div></code></pre>
+<p>実行</p>
+<pre class="hljs"><code><div>(vina) user_account@xxxx:~$ python3 grid_box.py
+
+</div></code></pre>
+<br>
+<ul>
+<li><strong>類縁タンパク質で基質や基質類似体との複合体がない場合</strong></li>
+</ul>
+<h4 id="1-web%E4%BE%8B%E3%81%88%E3%81%B0neurosnap-httpsneurosnapai%E3%81%AA%E3%81%A9%E3%82%92%E4%BD%BF%E3%81%86">1.　web（例えば，neurosnap <a href="https://neurosnap.ai/">https://neurosnap.ai/</a>）などを使う</h4>
+<p>DiffDock-L，Boltzなどで結合ポーズを予測する。</p>
+<p>どこに結合するか分からない状態でシミュレーションすることをブラインドドッキングといいます。DiffDockやDiffDock-Lはブラインドドッキングに極めて長けています。</p>
+<p>Boltzはドッキングシミュレーションではありませんが，リガンドも含めて複合体構造を予測してくれます。</p>
+<p>しかし，これらは，こんな感じで結合するであろうということをAIが予想するだけなので（ですから，結合エネルギーが計算されません），リガンドがあり得ない結合角をとったり，受容体にめり込んだりしてしまいます。</p>
+<p>DiffDock-LやBoltzなどで結合ポーズを予測した後で，Autodock-Vinaを使って，結合を物理的に計算してあげることが重要です。</p>
+<p>GNINAは結合ポーズをAI（CNN）で予測しつつ，Vinaで結合エネルギーも計算してくれる優れたソフトウェアですが，ブラインドドッキングではDiffDockにはかないません。</p>
+<br>
+<h4 id="2-%E3%81%9D%E3%82%8C%E3%82%89%E3%81%97%E3%81%84%E2%81%A0%E7%A9%B4%E3%82%92%E6%8E%A2%E3%81%99">2.　それらしい⁠穴を探す。</h4>
+<p><strong>2.1　ChimeraXのToolsメニューからStructure Analysis→Find Cavitiesで探す</strong></p>
+<p><img src="Files/image 5.png" alt=""><br></p>
+<p>ここだとあまりポケットっぽいものがない。強いて挙げるならcavity_3がそれっぽいので，ここの中心を調べる。command窓に</p>
+<p><code>measure center #1.1.3</code></p>
+<p>で，</p>
+<p><code>Center of mass of 220 atoms = (-3.37, 3.46, -7.13)</code></p>
+<p><code>Center of area of surface cavity 3_cavity SES surface #1.1.3.1 = (-3.69, 3.51, -7.16)</code></p>
+<p>⁠がはき出される。</p>
+<p><strong>2.2　PrankWebを使う（<a href="https://prankweb.cz/">https://prankweb.cz/</a>）</strong></p>
+<p>保存したAFモデルを使う場合には，Custom structureを選択して，ファイル選択→ファイルを読み込ませる</p>
+<p>AlphaFold Structureを選択すれば対象タンパク質のUniProt IDを入力して予測できる。</p>
+<br>
+<p><img src="Files/image 6.png" alt=""><br></p>
+<p>このように結果が返ってくる。</p>
+<p>ポケットの中心や関わっている残基も出される。</p>
+<p>（ちなみにCREATE TASKで，Task typeにDocking選んで，リガンド分子をSMILES（Pubchemから取得できる）で入力すれば，ドッキングしてくれます。）</p>
+<p><img src="Files/image 7.png" alt=""><br></p>
+<p>中心座標が分かったらリガンドの大きさにあわせてボックスサイズを決める。単糖なら10 Åくらいの立方体。20 Åくらいまでか･･･</p>
+<br>
+<h2 id="%E3%83%89%E3%83%83%E3%82%AD%E3%83%B3%E3%82%B0%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3">ドッキングシミュレーション</h2>
+<p>参考　<a href="https://autodock-vina.readthedocs.io/en/latest/index.html">https://autodock-vina.readthedocs.io/en/latest/index.html</a></p>
+<h3 id="%E3%83%95%E3%82%A9%E3%83%AB%E3%83%80%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E5%8F%97%E5%AE%B9%E4%BD%93%E3%82%BF%E3%83%B3%E3%83%91%E3%82%AF%E8%B3%AApdb%E3%81%A8%E3%83%AA%E3%82%AC%E3%83%B3%E3%83%89sdf%E3%82%92%E4%BF%9D%E5%AD%98%E3%81%97%E3%81%A6%E3%81%8A%E3%81%8F">フォルダを作って受容体タンパク質（*.pdb）とリガンド（*.sdf）を保存しておく</h3>
+<pre class="hljs"><code><div>~/vina$ mkdir <span class="hljs-built_in">test</span> <span class="hljs-comment"># 新しくディレクトリをつくる</span>
+~/vina$ <span class="hljs-built_in">cd</span> <span class="hljs-built_in">test</span>　<span class="hljs-comment"># ディレクトリに移動する</span>
+~/vina/<span class="hljs-built_in">test</span>$ cp /mnt/d/files/Autodock_Vina/Ligand.sdf ./lig.sdf　<span class="hljs-comment"># windows側で作ったタンパク質（pdb）とリガンド（sdf）をコピー。</span>
+
+</div></code></pre>
+<h3 id="br"><br></h3>
+<h3 id="%E5%8F%97%E5%AE%B9%E4%BD%93%E3%82%BF%E3%83%B3%E3%83%91%E3%82%AF%E8%B3%AA%E3%81%AE%E8%AA%BF%E8%A3%BD-pdb%E2%86%92pdbqt">受容体タンパク質の調製　*.pdb→*.pdbqt</h3>
+<pre class="hljs"><code><div>~/vina/<span class="hljs-built_in">test</span>$ ls -lX
+total 420
+-rwxr-xr-x 1 mop mop 423081 Mar  6 11:13 rec.pdb
+-rwxr-xr-x 1 mop mop   2159 Mar  6 11:14 lig.sdf
+
+~/vina/<span class="hljs-built_in">test</span>$ prepare_receptor -h <span class="hljs-comment">#ヘルプが出てきたらちゃんとインストールされている</span>
+~/vina/<span class="hljs-built_in">test</span>$ prepare_receptor -r rec.pdb -o rec.pdbqt
+<span class="hljs-string">'B '</span> apparently composed of not std residues. Deleting 
+adding gasteiger charges to peptide
+~/vina/<span class="hljs-built_in">test</span>$ ls -lX
+total 676
+-rwxr-xr-x 1 mop mop 423081 Mar  6 11:13 rec.pdb
+-rw-r--r-- 1 mop mop 260428 Mar  6 11:30 rec.pdbqt <span class="hljs-comment"># ←できている</span>
+-rwxr-xr-x 1 mop mop   2159 Mar  6 11:14 lig.sdf
+
+</div></code></pre>
+<br>
+<h3 id="%E3%83%AA%E3%82%AC%E3%83%B3%E3%83%89%E3%81%AE%E8%AA%BF%E8%A3%BD">リガンドの調製</h3>
+<pre class="hljs"><code><div>~/vina/<span class="hljs-built_in">test</span>$ mk_prepare_ligand.py --<span class="hljs-built_in">help</span>
+<span class="hljs-comment"># 環境構築でmeekoをpipで入れていないとここでエラーが起きる</span>
+~/vina/<span class="hljs-built_in">test</span>$ mk_prepare_ligand.py -i 1iep_ligand.sdf -o 1iep_ligand.pdbqt
+
+</div></code></pre>
+<br>
+<h3 id="autodock-forcefield%E3%81%AB%E3%82%88%E3%82%8B%E3%83%89%E3%83%83%E3%82%AD%E3%83%B3%E3%82%B0%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%82%A2%E3%83%95%E3%82%A3%E3%83%8B%E3%83%86%E3%82%A3%E3%83%BC%E3%83%9E%E3%83%83%E3%83%97%E3%81%AE%E7%94%9F%E6%88%90%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">AutoDock forcefieldによるドッキングのためのアフィニティーマップの生成（オプション）</h3>
+<pre class="hljs"><code><div>~/vina/<span class="hljs-built_in">test</span>$ mk_prepare_receptor.py -i rec.pdb -o rec -p -v -g \
+--box_size 10 10 10 --box_center 2.96 8.28 -1.60
+</div></code></pre>
+<p>分子ドッキングのために用いるdifferent map files をつくる</p>
+<pre class="hljs"><code><div>~/vina/<span class="hljs-built_in">test</span>$ autogrid4 -p rec.gpf -l rec.glg
+
+</div></code></pre>
+<br>
+<h3 id="autodock-vina%E3%82%92%E8%B5%B0%E3%82%89%E3%81%9B%E3%82%8B">AutoDock Vinaを走らせる</h3>
+<h4 id="4a-autodock4-forcefield-3%E3%81%A7affinitymap%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%81%8A%E3%81%8F">4a.  AutoDock4 forcefield (3.でaffinity_mapを作っておく)</h4>
+<pre class="hljs"><code><div>~/vina/<span class="hljs-built_in">test</span>$ vina --ligand lig.pdbqt --maps rec --scoring ad4 --exhaustiveness 32 --out ligand_ad4_out.pdbqt --cpu 8 &gt;Autodock4_forcefield.out
+
+</div></code></pre>
+<p>Autodock4_forcefield.outに結果が記録されている</p>
+<p>参考：cpuの数を調べる</p>
+<pre class="hljs"><code><div>$ lscpu
+Architecture:             x86_64
+  CPU op-mode(s):         32-bit, 64-bit
+  Address sizes:          39 bits physical, 48 bits virtual
+  Byte Order:             Little Endian
+CPU(s):                   16  <span class="hljs-comment">#ここ。 上のオプションで半分くらい（8）にしておく。そこまでcpuを食うわけではない。</span>
+....
+</div></code></pre>
+<h4 id="4b-vina-forcefield">4b. Vina forcefield</h4>
+<p>configureファイル（rec_vina_box.txt）をつくる</p>
+<pre class="hljs"><code><div>touch rec_vina_box.txt
+</div></code></pre>
+<p>VSCodeでrec_vina_box.txtを開き，中心座標とboxサイズを記入→保存</p>
+<pre class="hljs"><code><div>center_x = 2.96
+center_y = 8.28
+center_z = -1.60
+size_x = 10.0
+size_y = 10.0
+size_z = 10.0
+</div></code></pre>
+<p>走らせる</p>
+<pre class="hljs"><code><div>vina --receptor rec.pdbqt --ligand lig.pdbqt --config rec_vina_box.txt --exhaustiveness=32 --out ligand_vina_out.pdbqt --cpu 8 &gt;Vina_forcefield.out
+</div></code></pre>
+<br>
+<h3 id="%E7%B5%90%E6%9E%9C%E3%82%92sdf%E3%81%AB%E5%A4%89%E6%8F%9B">結果をSDFに変換</h3>
+<pre class="hljs"><code><div>$ mk_export.py ligand_ad4_out.pdbqt -s ligand_ad4_out.sdf
+$ mk_export.py ligand_vina_out.pdbqt -s ligand_vina_out.sdf
+</div></code></pre>
+<br>
+<br>
+<h2 id="%E7%B5%90%E6%9E%9C%E3%81%AE%E8%A6%B3%E5%AF%9F">結果の観察</h2>
+<h3 id="%E5%8F%97%E5%AE%B9%E4%BD%93%E3%82%BF%E3%83%B3%E3%83%91%E3%82%AF%E8%B3%AA%E3%82%92pymol%E7%AD%89%E3%81%A7%E9%96%8B%E3%81%8D%E7%B5%90%E6%9E%9C%E3%81%AEsdf%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%93%E3%81%A7%E8%A6%B3%E5%AF%9F%E3%81%99%E3%82%8B">受容体タンパク質をPyMOL等で開き，結果の.sdfファイルを読み込んで，観察する。</h3>
+<pre class="hljs"><code><div>$ explorer.exe .
+</div></code></pre>
+<p>でカレントディレクトリからwindowsのエクスプローラが立ち上がります。</p>
+<br>
+<p>こちらはAutodockFFの結果。同様にVinaの結果も見られます。</p>
+<p><img src="Files/image 8.png" alt=""><br></p>
+<p>8個のポーズが出力される。矢印キーでポーズの表示を変えられます。</p>
+<p>8個を分割したい場合には，pymolのコマンドラインに</p>
+<p><code>split_states ligand*, prefix=ad4</code></p>
+<p><code>delete ligand*</code></p>
+<p>と入力すれば，</p>
+<p><img src="Files/image 9.png" alt=""><br></p>
+<p>ad4のprefixをつけて8個のobjとして分割してくれます。</p>
+<p>（ちなみに*は，”wildcard”で，任意の文字列。AFDBから取得した構造は，長い名前がついていることが多いので，wildcardを使うと便利）</p>
+<br>
+<h3 id="autodock4forcefieldout-%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%81%AE%E3%81%A8%E3%81%8D%E3%81%ABautodock4forcefieldout-%E3%81%A7%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99"><code>Autodock4_forcefield.out</code>　（シミュレーションの実行のときに，<code>&gt;Autodock4_forcefield.out</code>　で指定しています）</h3>
+<p>（テキストエディタなどで開けます。）</p>
+<pre class="hljs"><code><div>AutoDock Vina 7ac2999-mod
+#################################################################
+# If you used AutoDock Vina in your work, please cite:          #
+#                                                               #
+# J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli  #
+# AutoDock Vina 1.2.0: New Docking Methods, Expanded Force      #
+# Field, and Python Bindings, J. Chem. Inf. Model. (2021)       #
+# DOI 10.1021/acs.jcim.1c00203                                  #
+#                                                               #
+# O. Trott, A. J. Olson,                                        #
+# AutoDock Vina: improving the speed and accuracy of docking    #
+# with a new scoring function, efficient optimization and       #
+# multithreading, J. Comp. Chem. (2010)                         #
+# DOI 10.1002/jcc.21334                                         #
+#                                                               #
+# Please see https://github.com/ccsb-scripps/AutoDock-Vina for  #
+# more information.                                             #
+#################################################################
+
+Scoring function : ad4
+Ligand: lig.pdbqt
+Exhaustiveness: 32
+CPU: 8
+Verbosity: 1
+
+Reading AD4.2 maps ... done.
+Performing docking (random seed: -663839000) ... 
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+***************************************************
+
+mode |   affinity | dist from best mode
+     | (kcal/mol) | rmsd l.b.| rmsd u.b.
+-----+------------+----------+----------
+   1       -4.279          0          0
+   2       -4.149      1.043      3.008
+   3       -4.077      1.047      4.381
+   4       -3.994      1.011      3.209
+   5       -3.934     0.5546      3.156
+   6       -3.893     0.8702      3.674
+   7       -3.665     0.6611      3.184
+   8       -3.642     0.7569      3.795
+
+</div></code></pre>
+<p>**<br>
+**</p>
+<p><code>rmsd l.b.</code>と<code>rmsd u.b.</code>は**「一番スコアが良かったMode 1」を基準としたズレ**です。</p>
+<p><code>rmsd u.b.</code> (Upper Bound: 上限)</p>
+<p>こちらは、「原子の番号（ID）を厳密に1対1で対応させて」ズレを計算した値です。</p>
+<ul>
+<li>リガンドの「原子1」はMode 1の「原子1」と、「原子2」は「原子2」と…というように、全く同じ原子がどれくらい移動したかを計算します。</li>
+</ul>
+<p><code>rmsd l.b.</code> (Lower Bound: 下限) = 見た目の「形」の比較</p>
+<p>対称性のある化合物の場合，くるっと分子がまわっていてもu.b.の値が大きくなってしまいます。</p>
+<p>l.b. はそれを補正するように「一番近くにある同じ種類の原子」とマッチングさせてズレを計算した値です。</p>
+<ul>
+<li>原子のIDを無視して、「一番近くにある炭素原子」「一番近くにある酸素原子」との距離を測ります。</li>
+</ul>
+<br>
+<p>例えば，mode 1とmode 5だと，分子としての結合位置はほとんど変わりません。ですからrsmd l.b.は，小さい値になります。ですが，約60°回転して結合しているので，rsmd u.b.の値は大きくなっています。</p>
+<p><img src="Files/image 10.png" alt=""><br></p>
+<br>
+</body>
+</html>
